@@ -10,9 +10,8 @@ from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from polyreg import PolynomialRegression
 
-from sklearn.linear_model import Ridge
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.model_selection import LeaveOneOut
+from sklearn.model_selection import train_test_split, LeaveOneOut
+
 
 from polyreg import learningCurve
 
@@ -31,8 +30,10 @@ def plotLearningCurve(errorTrain, errorTest, regLambda, degree):
 
     xs = np.arange(len(errorTrain))
     plt.plot(xs, errorTrain, 'r-o')
+ 
     plt.plot(xs, errorTest, 'b-o')
     plt.plot(xs, np.ones(len(xs)), 'k--')
+
     plt.legend(['Training Error', 'Testing Error'], loc = 'best')
     plt.title('Learning Curve (d='+str(degree)+', lambda='+str(regLambda)+')')
     plt.xlabel('Training samples')
@@ -47,15 +48,16 @@ def generateLearningCurve(X, y, degree, regLambda):
         computing learning curve via leave one out CV
     '''
 
-    n = len(X);
+    n = len(X)
     
-    errorTrains = np.zeros((n, n-1));
-    errorTests = np.zeros((n, n-1));
+    errorTrains = np.zeros((n, n-1))
+    errorTests = np.zeros((n, n-1))
     
-    loo = LeaveOneOut()
+    ab = LeaveOneOut()
+
 
     itrial = 0
-    for train_index, test_index in loo.split(X):
+    for train_index, test_index in ab.split(X):
         #print("TRAIN indices:", train_index, "TEST indices:", test_index)
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
@@ -91,15 +93,15 @@ if __name__ == "__main__":
 
     # generate Learning curves for different params
     plt.subplot(2, 3, 1)
-    generateLearningCurve(X, y, 1, 0);
+    generateLearningCurve(X, y, 1, 0)
     plt.subplot(2, 3, 2)
-    generateLearningCurve(X, y, 4, 0);
+    generateLearningCurve(X, y, 4, 0)
     plt.subplot(2, 3, 3)
-    generateLearningCurve(X, y, 8, 0);
+    generateLearningCurve(X, y, 8, 0)
     plt.subplot(2, 3, 4)
-    generateLearningCurve(X, y, 8, .1);
+    generateLearningCurve(X, y, 8, .1)
     plt.subplot(2, 3, 5)
-    generateLearningCurve(X, y, 8, 1);
+    generateLearningCurve(X, y, 8, 1)
     plt.subplot(2, 3, 6)
-    generateLearningCurve(X, y, 8, 100);
+    generateLearningCurve(X, y, 8, 100)
     plt.show()
